@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiSync.AI - Unified Logistics Data Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">⚡</div>
+                    <h1>LogiSync.AI</h1>
+                </div>
+                <nav class="nav-menu">
+                    <button class="nav-btn active" data-screen="dashboard">Dashboard</button>
+                    <button class="nav-btn" data-screen="tracking">Track Shipment</button>
+                    <button class="nav-btn" data-screen="driver-tools">Driver Tools</button>
+                    <button class="nav-btn" data-screen="data-sources">Data Sources</button>
+                    <button class="nav-btn" data-screen="ai-chat">AI Assistant</button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Screen -->
+            <div id="dashboard-screen" class="screen active">
+                <div class="screen-header">
+                    <h2>📊 Unified Logistics Dashboard</h2>
+                    <p>Real-time visibility across fragmented data sources</p>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">🚛</div>
+                        <div class="metric-number" id="active-trucks">1</div>
+                        <div class="metric-label">Active Trucks</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">📱</div>
+                        <div class="metric-number" id="data-sources">5</div>
+                        <div class="metric-label">Data Sources</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🧠</div>
+                        <div class="metric-number" id="ai-predictions">1</div>
+                        <div class="metric-label">AI Predictions</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">⚠️</div>
+                        <div class="metric-number" id="anomalies">0</div>
+                        <div class="metric-label">Anomalies Detected</div>
+                    </div>
+                </div>
+
+                <!-- Active Shipments -->
+                <div class="shipments-section">
+                    <h3>🚛 Active Shipments</h3>
+                    <div class="shipments-grid" id="shipments-grid">
+                        <!-- Shipments will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Recent Data Updates -->
+                <div class="updates-section">
+                    <h3>📱 Recent Data Updates</h3>
+                    <div class="updates-list" id="updates-list">
+                        <!-- Updates will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tracking Screen -->
+            <div id="tracking-screen" class="screen">
+                <div class="screen-header">
+                    <h2>🔍 Track Shipment</h2>
+                    <p>Unified tracking across all data sources</p>
+                </div>
+                
+                <div class="tracking-form">
+                    <input type="text" id="tracking-input" class="input-field" placeholder="Enter Truck ID (e.g., KBA-234D)">
+                    <button class="btn-primary" onclick="trackShipment()">Track Shipment</button>
+                </div>
+
+                <div id="tracking-results" class="tracking-results" style="display: none;">
+                    <div class="result-card">
+                        <h3>Unified Tracking Data</h3>
+                        <div id="tracking-content"></div>
+                    </div>
+                </div>
+
+                <!-- AI Predictions -->
+                <div class="ai-predictions-card" id="ai-predictions-card" style="display: none;">
+                    <h3>🤖 AI Predictions</h3>
+                    <div class="prediction-grid" id="prediction-grid">
+                        <!-- Predictions will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Driver Tools Screen -->
+            <div id="driver-tools-screen" class="screen">
+                <div class="screen-header">
+                    <h2>🚛 Driver Tools</h2>
+                    <p>Simple data collection for drivers</p>
+                </div>
+
+                <div class="driver-tools-grid">
+                    <!-- SMS Update -->
+                    <div class="driver-card">
+                        <div class="driver-card-header">
+                            <div class="driver-icon">📱</div>
+                            <h3>SMS Update</h3>
+                        </div>
+                        <p>Send simple text message updates</p>
+                        <div class="driver-form">
+                            <input type="text" id="driver-phone" class="input-field" placeholder="Your phone number" value="+254712345678">
+                            <textarea id="driver-message" class="input-field" placeholder="Example: KBA-234D departed Nairobi 14:30" rows="3"></textarea>
+                            <button class="btn-primary" onclick="addDriverSMS()">Send SMS Update</button>
+                        </div>
+                        <div class="driver-examples">
+                            <strong>Examples:</strong><br>
+                            • KBA-234D departed Nairobi 14:30<br>
+                            • KBA-234D arrived Thika 16:45<br>
+                            • KBA-234D checkpoint Malaba 18:20
+                        </div>
+                    </div>
+
+                    <!-- QR Code Scanner -->
+                    <div class="driver-card">
+                        <div class="driver-card-header">
+                            <div class="driver-icon">📱</div>
+                            <h3>QR Code Scanner</h3>
+                        </div>
+                        <p>Scan QR codes at checkpoints</p>
+                        <div class="qr-scanner-container">
+                            <div class="qr-scanner-mock" id="qr-scanner-mock">
+                                <div class="qr-scanner-frame">
+                                    <video id="qr-video" width="300" height="200" style="display: none;"></video>
+                                    <canvas id="qr-canvas" width="300" height="200" style="display: none;"></canvas>
+                                    <div id="qr-scanner-placeholder">
+                                        <div class="qr-scanner-text">📱 QR Code Scanner</div>
+                                        <div class="qr-scanner-subtext">Click to start camera</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="qr-controls">
+                                <button class="btn-primary" id="start-qr-scanner" onclick="startQRScanner()">Start QR Scanner</button>
+                                <button class="btn-secondary" id="stop-qr-scanner" onclick="stopQRScanner()" style="display: none;">Stop Scanner</button>
+                            </div>
+                            <div id="qr-result" class="qr-result" style="display: none;"></div>
+                        </div>
+                        <div class="driver-examples">
+                            <strong>QR Codes contain:</strong><br>
+                            • Truck ID<br>
+                            • Cargo type<br>
+                            • Weight<br>
+                            • Destination
+                        </div>
+                    </div>
+
+                    <!-- Receipt Upload -->
+                    <div class="driver-card">
+                        <div class="driver-card-header">
+                            <div class="driver-icon">📄</div>
+                            <h3>Receipt Upload</h3>
+                        </div>
+                        <p>Upload receipts for AI processing</p>
+                        <div class="driver-form">
+                            <input type="file" id="driver-receipt" accept="image/*" class="input-field">
+                            <button class="btn-primary" onclick="uploadDriverReceipt()">Process Receipt</button>
+                        </div>
+                        <div class="driver-examples">
+                            <strong>AI will extract:</strong><br>
+                            • Truck ID<br>
+                            • Cargo details<br>
+                            • Location<br>
+                            • Timestamp
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Sources Screen -->
+            <div id="data-sources-screen" class="screen">
+                <div class="screen-header">
+                    <h2>📊 Data Sources</h2>
+                    <p>View fragmented data from all sources - This is the problem we solve!</p>
+                </div>
+
+                <div class="sources-explanation">
+                    <div class="explanation-card">
+                        <h3>🌍 The Problem: Fragmented Data</h3>
+                        <p>In African logistics, data comes from multiple sources with different formats, timestamps, and quality. This creates visibility gaps and coordination challenges.</p>
+                    </div>
+                </div>
+
+                <div class="sources-grid">
+                    <div class="source-card">
+                        <h3>🚛 Carrier Logs</h3>
+                        <p>Driver updates and checkpoint logs</p>
+                        <div class="source-data" id="carrier-logs">
+                            <!-- Carrier logs will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="source-card">
+                        <h3>🏛️ Customs Records</h3>
+                        <p>Border crossing and clearance data</p>
+                        <div class="source-data" id="customs-records">
+                            <!-- Customs records will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="source-card">
+                        <h3>🏭 Warehouse Receipts</h3>
+                        <p>Loading and unloading documentation</p>
+                        <div class="source-data" id="warehouse-receipts">
+                            <!-- Warehouse receipts will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="source-card">
+                        <h3>📱 SMS Updates</h3>
+                        <p>Simple text messages from drivers</p>
+                        <div class="source-data" id="sms-updates">
+                            <!-- SMS updates will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="source-card">
+                        <h3>📱 QR Scans</h3>
+                        <p>Checkpoint scanning data</p>
+                        <div class="source-data" id="qr-scans">
+                            <!-- QR scans will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="unification-explanation">
+                    <div class="explanation-card">
+                        <h3>✨ Our Solution: AI Data Unification</h3>
+                        <p>LogiSync.AI uses AI to unify all these fragmented sources into a single, clear view. See the "Dashboard" tab to see the unified result!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Chat Screen -->
+            <div id="ai-chat-screen" class="screen">
+                <div class="screen-header">
+                    <h2>🤖 AI Logistics Assistant</h2>
+                    <p>Ask questions about shipments, routes, and logistics</p>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="chat-message ai-message">
+                            <strong>LogiSync.AI:</strong> Hello! I can help you track shipments, analyze data, and answer logistics questions. I have access to unified data from carriers, customs, warehouses, SMS updates, and QR scans. How can I help you today?
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Ask about shipments, routes, or logistics..." onkeypress="handleChatKeyPress(event)">
+                        <button class="btn-primary" onclick="sendChatMessage()">Send</button>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="btn-secondary" onclick="quickAction('track')">📍 Track KBA-234D</button>
+                        <button class="btn-secondary" onclick="quickAction('eta')">⏰ Get ETA</button>
+                        <button class="btn-secondary" onclick="quickAction('anomaly')">⚠️ Check Anomalies</button>
+                        <button class="btn-secondary" onclick="quickAction('sources')">📊 Data Sources</button>
+                        <button class="btn-secondary" onclick="quickAction('swahili')">🌍 Ask in Swahili</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">AI Response</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- QR Code Detection Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
