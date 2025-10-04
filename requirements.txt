@@ -9,3 +9,5 @@ Pillow==10.0.0
 requests==2.31.0
 Werkzeug==2.3.7
 gunicorn==21.2.0
+setuptools==68.2.2
+wheel==0.41.2
