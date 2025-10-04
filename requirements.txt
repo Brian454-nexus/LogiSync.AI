@@ -9,3 +9,6 @@ Pillow
 requests
 Werkzeug
 gunicorn
+setuptools
+wheel
+pip
